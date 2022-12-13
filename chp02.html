@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <title>2&period;1 &#x30cf;&#x30c3;&#x30b7;&#x30e5;&#x95a2;&#x6570;&#x3068;&#x306f;&#x4f55;&#x304b;</title>
+        <style>
+/* From extension vscode.github */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.vscode-dark img[src$=\#gh-light-mode-only],
+.vscode-light img[src$=\#gh-dark-mode-only] {
+	display: none;
+}
+
+/* From extension ms-toolsai.jupyter */
+/* These classnames are inherited from bootstrap, but are present in most notebook renderers */
+
+.alert {
+    width: auto;
+    padding: 1em;
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+.alert > *:last-child {
+    margin-bottom: 0;
+}
+#preview > .alert:last-child {
+    /* Prevent this being set to zero by the default notebook stylesheet */
+    padding-bottom: 1em;
+}
+
+.alert-success {
+    /* Note there is no suitable color available, so we just copy "info" */
+    background-color: var(--theme-info-background);
+    color: var(--theme-info-foreground);
+}
+.alert-info {
+    background-color: var(--theme-info-background);
+    color: var(--theme-info-foreground);
+}
+.alert-warning {
+    background-color: var(--theme-warning-background);
+    color: var(--theme-warning-foreground);
+}
+.alert-danger {
+    background-color: var(--theme-error-background);
+    color: var(--theme-error-foreground);
+}
+
+</style>
+        
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
+<style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans','Meiryo UI', sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        </style>
+        <style>
+.task-list-item {
+    list-style-type: none;
+}
+
+.task-list-item-checkbox {
+    margin-left: -20px;
+    vertical-align: middle;
+    pointer-events: none;
+}
+</style>
+        
+    </head>
+    <body class="vscode-body vscode-light">
+        <!--Title: 2章 ハッシュ関数 -->
+<ul>
+<li>ハッシュ関数とセキュリティ特性</li>
+<li>現在使われるハッシュ関数</li>
+<li>ハッシュの仕組み</li>
+</ul>
+<p>「どんなものにも、全体の中で重複しない識別情報を結びつける」ことがハッシュ関数の仕事。
+任意の文字列から特定のバイト列を生成する。
+入力が同じなら、同じハッシュ列を返す。これが強い。</p>
+<h1 id="21-ハッシュ関数とは何か">2.1 ハッシュ関数とは何か</h1>
+<p>アプリのダウンロードとか、パッケージのインストールなどで謎の文字列が生まれる。</p>
+<p>たとえば <code>sha256sum</code>とか見たことありそう。これはどのように処理・生成されるのだろうか。</p>
+<p>【プロトコル】</p>
+<ul>
+<li>ボタンをクリックしてファイルをダウンロードする</li>
+<li>ダウンロードしたファイルを SHA-256 アルゴリズムでハッシュする</li>
+<li>ハッシュした出力(=ダイジェスト/ハッシュ)を、ウェブページに表示されている文字列と比較する。
+<ul>
+<li>これが合っている=同じハッシュ値=入力(DLしたファイル)が同じ。</li>
+</ul>
+</li>
+</ul>
+<p>実際にSHA-256を <code>openssl</code>でやってみると確かに一致する。
+これをやる目的: ダウンロードしたものが、ダウンロードしようと意図していたファイルに違いないという保証をしたい。</p>
+<ul>
+<li>完全性(integrity)</li>
+<li>真正性(authenticity)</li>
+</ul>
+<p>ハッシュ関数には「第二現像困難性」がある。</p>
+<p>→ ハッシュ値がおなじになるような「別のファイル」を見つけることは難しい。</p>
+<p>ハッシュ値…ウェブページの所有者が管理していて、ウェブページを書き換えられる人なら、誰でも簡単に差し替えられる点には注意。</p>
+<p>→ ダイジェストを提供しているページ、所有者、ページ取得に使われる仕組み
+　を信頼する必要がある。</p>
+<p>→ 書き換えられる状態だとハッシュ関数だけでは完全性を保証出来ない。</p>
+<p>ダウンロードされるファイルの完全性は、ダイジェストと、ダイジェストを提供する仕組み(httpsなど)</p>
+<p>ハッシュ関数の入力: 何でもいい。空白ですらいい。
+ハッシュ関数の出力: 決定論的に「同じ長さ」になる(SHA-256は256ビット)</p>
+<p>→ 16進数の数字列64個で表現される。</p>
+<p>一文字かわるだけで全部違う。</p>
+<h1 id="22-ハッシュ関数のセキュリティ特性">2.2 ハッシュ関数のセキュリティ特性</h1>
+<ul>
+<li>
+<p>現像計算困難性</p>
+<ul>
+<li>ある出力が与えられるとき、ハッシュ関数を逆に計算して入力を求めることはできない</li>
+<li>ミキサーみたいなもん。一回キャベツぶっこんだら終わり。</li>
+</ul>
+<blockquote>
+<p>入力が小さい場合、たとえば入力が3文字しかない場合は総当たりで試せちゃう。
+また、入力の差が小さい場合。「月曜日の午前3時に帰宅する」について、たとえば
+「月曜の15時に帰宅する」とか「月曜午後3時に帰宅する」など、色々試せるとすると、
+正確な入力が得られるかもしれない。</p>
+</blockquote>
+<p>正直現像計算困難性は完全に達成することは難しい</p>
+</li>
+<li>
+<p>第二現像計算困難性</p>
+<ul>
+<li>ある入力とダイジェストがあるとき、ハッシュして同じダイジェストになるような
+「別の入力」を求めることが出来ない。</li>
+<li>現像計算困難性を補う特性。</li>
+<li>最初の入力は何もコントロールしていない。
+<ul>
+<li>攻撃者はファイル管理者の持つダイジェストと同じハッシュ値を持つファイルに
+悪意を仕込んで差し替えるような動きが想定できる</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>衝突困難性（衝突計算困難性/衝突耐性）</p>
+<ul>
+<li>ハッシュして同じ値になるような2種類の入力は存在しない</li>
+<li>衝突困難性では、攻撃者が入力をコントロールする。
+つまり、同じハッシュ値を持つ2つのファイルを用意して、
+一方に善意、もう一方で悪意を仕込んで、悪意をDLさせる動きができる</li>
+</ul>
+<blockquote>
+<p>衝突困難性と第二現像計算困難性の違いは何だろう？
+→ 攻撃者が2つの入力を選ぶことができる点。</p>
+</blockquote>
+</li>
+</ul>
+<p>ランダムオラクル</p>
+<p>ハッシュ関数は一般的に、予測不能でランダムなダイジェストを出力するように設計される。
+ハッシュ関数のセキュリティ特性上、プロトコルが安全であると永続的に保証できないので、
+ランダムで予測不能に設計する必要がある。
+「ランダムオラクル」は架空の構造を想定したモデル。プロトコルはこれを使って安全性を保証する。
+ランダムオラクルを使うプロトコルでは、任意の入力を送信して、全くランダムな出力が返される。</p>
+<h1 id="23">2.3</h1>
+<h1 id="24">2.4</h1>
+<h2 id="241">2.4.1</h2>
+<h2 id="242">2.4.2</h2>
+<h2 id="243">2.4.3</h2>
+<h2 id="244">2.4.4</h2>
+<h1 id="25">2.5</h1>
+<h2 id="251">2.5.1</h2>
+<h2 id="252">2.5.2</h2>
+<h2 id="253">2.5.3</h2>
+<h2 id="254">2.5.4</h2>
+<h1 id="26">2.6</h1>
+
+        
+        
+    </body>
+    </html>

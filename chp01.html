@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <title>1&period;1 &#x6697;&#x53f7;&#x306e;&#x8981;&#x3001;&#x30d7;&#x30ed;&#x30c8;&#x30b3;&#x30eb;&#x306e;&#x4fdd;&#x8b77;&#x3068;&#x3044;&#x3046;&#x3053;&#x3068;</title>
+        <style>
+/* From extension vscode.github */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.vscode-dark img[src$=\#gh-light-mode-only],
+.vscode-light img[src$=\#gh-dark-mode-only] {
+	display: none;
+}
+
+/* From extension ms-toolsai.jupyter */
+/* These classnames are inherited from bootstrap, but are present in most notebook renderers */
+
+.alert {
+    width: auto;
+    padding: 1em;
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+.alert > *:last-child {
+    margin-bottom: 0;
+}
+#preview > .alert:last-child {
+    /* Prevent this being set to zero by the default notebook stylesheet */
+    padding-bottom: 1em;
+}
+
+.alert-success {
+    /* Note there is no suitable color available, so we just copy "info" */
+    background-color: var(--theme-info-background);
+    color: var(--theme-info-foreground);
+}
+.alert-info {
+    background-color: var(--theme-info-background);
+    color: var(--theme-info-foreground);
+}
+.alert-warning {
+    background-color: var(--theme-warning-background);
+    color: var(--theme-warning-foreground);
+}
+.alert-danger {
+    background-color: var(--theme-error-background);
+    color: var(--theme-error-foreground);
+}
+
+</style>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
+<link href="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.css" rel="stylesheet" type="text/css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
+<style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans','Meiryo UI', sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        </style>
+        <style>
+.task-list-item {
+    list-style-type: none;
+}
+
+.task-list-item-checkbox {
+    margin-left: -20px;
+    vertical-align: middle;
+    pointer-events: none;
+}
+</style>
+        
+    </head>
+    <body class="vscode-body vscode-light">
+         <!-- title: 1章 暗号とはなにか --> 
+<h1 id="11-暗号の要プロトコルの保護ということ">1.1 暗号の要、プロトコルの保護ということ</h1>
+<p>暗号とは、妨害活動からプロトコルを守ること。
+プロトコルとは、個人が何らかの目的を達成しようとするときに従う一連の手順のこと。</p>
+<p>例: TCP: Transmission Control Protocol; IP: Internet Protocolなど。</p>
+<h1 id="12-対称暗号-対称暗号化とは">1.2 対称暗号: 対称暗号化とは</h1>
+<p>暗号学の基本: 対称暗号化</p>
+<p>例: アリスからボブ宛の手紙</p>
+<p>アリス女王「忠実な使者よ、この手紙をボブ卿に届けてください。何者の目にも触れさせないでね」
+忠実な使者「わかりました！」
+アリス女王(忠実な使者とはいえ、この人も「絶対に中身を見ない」とは限らないわね……。)</p>
+<p>アリス女王には「仲立ち」をおかずにボブ卿に手紙を渡す過程を「模倣」したプロトコルが必要。
+このプロトコルが対称暗号化プロトコル(暗号プリミティブ: 暗号化のアルゴリズムのこと)</p>
+<p>暗号プリミティブは以下の2つの関数を果たす。</p>
+<p>暗号化(Encrypt)
+復号(Decrypt)</p>
+<p>暗号化は以下のような関数であたかもランダムな文字列を生成する。
+ここで <code>f</code> は平文と秘密鍵を使った暗号化アルゴリズム</p>
+<pre><code class="language-python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">encrypt</span>(<span class="hljs-params">plaintext</span>):
+  message = f(plaintext, privatekey)
+  <span class="hljs-keyword">return</span> message
+</code></pre>
+<p>復号は以下で、ランダムな文字列に見える暗号文を、明示的な鍵を用いて文章に戻す。
+<code>g</code> は暗号化関数の逆関数だが <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>f</mi><mrow><mo>−</mo><mn>1</mn></mrow></msup></mrow><annotation encoding="application/x-tex">f^{-1}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.0085em;vertical-align:-0.1944em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.10764em;">f</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">−</span><span class="mord mtight">1</span></span></span></span></span></span></span></span></span></span></span></span>を想定する。アルゴリズムによっては真逆ではない場合もあるかもしれない。</p>
+<pre><code class="language-python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">decrypt</span>(<span class="hljs-params">message, privatekey</span>):
+  decrypt = g(message, privatekey)
+  <span class="hljs-keyword">return</span> decrypt
+</code></pre>
+<p>対称暗号は、アリスとボブが全く同じ鍵( <code>privatekey</code>) を持つ必要がある。鍵は複数のこともある。
+秘密鍵暗号とも言う。
+秘密鍵を使って平文をノイズ・乱数っぽいものに見せるのは、現代の暗号のアルゴリズムにおいて一般的</p>
+<p>→ これからお勉強します。</p>
+<h1 id="13-ケルクホフスの原理-秘匿されるのは鍵だけ">1.3 ケルクホフスの原理: 秘匿されるのは鍵だけ</h1>
+<p>暗号プリミティブを作ること自体は誰でもできるけど、安全な暗号プリミティブの設計は難しい。
+ではその暗号プリミティブが「安全」と信頼するためには何が必要なのか？</p>
+<p>暗号アルゴリズムが破られる原因や、暗号に対する攻撃方法は色々ある。
+・ 秘密鍵が漏洩する
+・ 暗号化されたメッセージを細かく見ることで平文に関する情報がわかる
+ので、暗号アルゴリズムは「破られる」前提で考えられるべき
+(どれだけ「破られにくい」かを評価すればよい)</p>
+<p>AES(Advanced Encryption Standard): NISTが提案する暗号アルゴリズム
+→ コンペで暗号プリミティブを採用するスタイル。
+ケルクホフスの原理: 暗号の標準をオープンに策定しようというアイデア。</p>
+<p>鍵の秘匿性: プロトコルを守るものであってアルゴリズムを守るものではない</p>
+<p>どんなアルゴリズムでもいつか敵に破られるので、秘密になる部分はアルゴリズムではない</p>
+<h1 id="14-非対称暗号-鍵は1つより2つ">1.4 非対称暗号: 鍵は1つより2つ</h1>
+<p>対称暗号である限りは、アリスとボブは最低1度は顔を合わせ、鍵を共有する必要がある。
+参加者が多いプロトコル(それこそTCP/IPとか)は、たくさんのアリスとたくさんのボブが、お互いに鍵を交換する必要があるので、シンプルに大変。</p>
+<p>→ 「鍵配送問題」という問題で長いこと議論されてきたが、1970年代に解決する</p>
+<p>公開鍵暗号がこれを解決する。公開鍵暗号は鍵を2つ準備して用いる。ここにおける信頼関係をどう確立するかは重要な議論</p>
+<h2 id="141-鍵交換-共有の秘密を使う">1.4.1 鍵交換: 共有の秘密を使う</h2>
+<p>Diffie-Hellman<strong>鍵交換</strong>アルゴリズム: 2者間で「共通の秘密」を設定する→第5章
+基本的には鍵①共通の秘密/鍵②自分だけの秘密(秘密鍵)を持つ。</p>
+<ul>
+<li>アリスとボブは事前に「■を使う」ことを採用する。</li>
+<li>鍵②として、アリスは▲、ボブは★を使うことにする。これはお互い絶対の秘密である</li>
+<li>鍵①と鍵②が決まったら、お互いに図形を「重ねる」。これが鍵①「公開鍵」になる
+<ul>
+<li>アリス: ■+▲</li>
+<li>ボブ: ■+★</li>
+</ul>
+</li>
+<li>共有の秘密はアリス・ボブ双方の公開鍵の重ね合わせ: ■+(▲+★)</li>
+</ul>
+<p>相手の公開鍵(ボブから見ればアリスの公開鍵: ■+▲)+秘密鍵(★)で、共有の秘密(■+(▲+★))が作れる
+全く別の敵が公開鍵の交換(■+▲と■+★の交換)を読み取っても、それだけでは共有の秘密を知る
+十分な情報は(本来)手に入らない。</p>
+<p>Diffie-Hellman暗号は<strong>安全ではない</strong>。</p>
+<p>中間者攻撃(Man In The Middle Attack; MTM)
+→ アリスはどんな公開鍵でも「ボブの公開鍵だ」と信じて受け取る。公開鍵をすり替えれば、ボブになりすます事ができる。
+→ 中間者イブ(■+●)がボブになりすますと、共有の秘密を(■+(▲+●))と計算できてしまって、それをもとに情報を交換出来てしまう。</p>
+<p>公開鍵暗号にすると、信頼性が上がる訳では無いが、信頼性を評価することがより簡単になる。</p>
+<h2 id="142-非対称暗号化と対称暗号化との違い">1.4.2 非対称暗号化と対称暗号化との違い</h2>
+<p>RSAアルゴリズム(Rivest-Shamir-Adleman)
+→ 秘密を守るためにメッセージを暗号化する目的。
+→ DH鍵交換は共通の対称鍵を用いて暗号化/復号する。
+RSA暗号は「公開鍵」と「秘密鍵」が定義される</p>
+<p>公開鍵を使って暗号化できるが、秘密鍵がないと復号できない。</p>
+<p>例: アリスとボブ</p>
+<p>公開鍵: 蓋の開いた箱🗃
+秘密鍵: 普通の鍵🔑</p>
+<p>アリスの蓋の開いた箱に、色んな人がそれぞれメッセージを入れる。
+→ 蓋を閉じると鍵が勝手に締まる仕組み。
+アリスは受信すると、普通の鍵🔑で蓋の鍵を開ける。
+→ アリス以外はこの鍵を持っていないので、安全っぽい。</p>
+<h2 id="143-デジタル署名-紙とペンを使う署名にかわるもの">1.4.3 デジタル署名: 紙とペンを使う署名にかわるもの</h2>
+<p>デジタル署名によって通信の秘密に対する信頼の確立は進んだ。
+「署名が捏造されないか心配……」→捏造できない上、他者が簡単に検証できるようになっている。</p>
+<p>例: アリスとボブとデイビッド</p>
+<p>設定: アリスはボブを信頼することをデイビッドに伝えたい。
+→ デイビッドがボブを信頼できるようにするためのプロトコルを確立する
+→ メッセージに署名するときに、アリスは秘密鍵🔑を使って、署名を生成する。
+→ デイビッドはアリスとアリスの署名アルゴリズムを信頼していれば、ボブを信頼できる。</p>
+<h1 id="15-暗号の分類と抽象化">1.5 暗号の分類と抽象化</h1>
+<p>まとめると、現代の暗号の中は大きく2つに分類。</p>
+<ul>
+<li>対称暗号: 秘密を1つ使う。複数の参加者が秘密を知っていれば「共有の秘密」
+<ul>
+<li>Diffie-Hellman鍵交換</li>
+</ul>
+</li>
+<li>非対称暗号: 非対称な立場から秘密を利用する。
+→ 公開鍵だけを知っている人もいれば、公開鍵と秘密鍵を知っている人もいる。
+<ul>
+<li>RSA暗号</li>
+<li>デジタル署名</li>
+</ul>
+</li>
+</ul>
+<p>暗号のプリミティブは他にも存在するが一旦対称暗号と非対称暗号を見ていく。</p>
+<ul>
+<li>数学ベースの構成法(RSAはじめいろいろ)
+<ul>
+<li>計算が遅い。</li>
+</ul>
+</li>
+<li>ヒューリスティック(AESがこちらにあたる)
+<ul>
+<li>計算が速い。</li>
+</ul>
+</li>
+</ul>
+<p>読み方のコツ</p>
+<ul>
+<li>最初は難解だけど読み進めれば文脈とかでなんとか分かるようになると思う</li>
+<li>現状の暗号学はクッソ複雑で、今も日進月歩で技術が発展している。</li>
+<li>プロトコルによって達成しようとする目的を抑えながら進めていこう。
+重要なのは大きく2つの特性
+<ul>
+<li>機密性(confidentiality): 正当な相手以外から情報を隠して保護すること</li>
+<li>認証(authentication): 話している相手の身元を検証すること。
+<ul>
+<li>わかりやすく言うと「本当にアリスからの手紙？」ということを確認できること。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>暗号プリミティブをプロトコルの中でどう使うのかによって、セキュリティの達成水準は異なる。</p>
+<h1 id="16-理論暗号学と現実世界の暗号学">1.6 理論暗号学と現実世界の暗号学</h1>
+<h1 id="17-理論から実践へ-きみならどうする">1.7 理論から実践へ: 「きみならどうする」</h1>
+<p>著者でも暗号プリミティブが実用化されるまでのパターンはよくわからない。
+ぼくならどうする？</p>
+<p>A. 暗号研究者になる？
+D. 民間企業で、問題の解決法を探している？
+E. 暗号学の事ばかり考えている？</p>
+<p>とりあえず研究者でも民間企業所属としての必要性でもないので、Eを選ぶ。</p>
+<p>政府には需要があり(シナリオ上)政府機関で新しい暗号を考案する必要がある。
+NISTとかFIPSとかでは暗号アルゴリズムの標準化を進めている。失敗も少なくないが。</p>
+<ul>
+<li>研究資金を提供する→1</li>
+<li>公開コンペを主催する→6</li>
+<li>使っているプリミティブ/プロトコルの標準化を進める→7</li>
+</ul>
+<p>特に専門性はないけど専門性の集まった場を知りたいから公開コンペを主催しよう。</p>
+<p>アルゴリズムがコンペティションで勝つ。公開コンペは人気。</p>
+<ul>
+<li>僕の考えた暗号構成法が勝った(ことにする)→7</li>
+</ul>
+<p>アルゴリズムやプロトコルが標準化される。</p>
+<p>→ とりあえずうまく行ったことにする。</p>
+<p>実装される</p>
+<p>→ 見直されるべきでは？</p>
+<p>→ 話題になった！</p>
+<p>応用される(ｺﾞｰﾙ)</p>
+<h1 id="18-戒めの言葉をひとつ">1.8 戒めの言葉をひとつ</h1>
+<blockquote>
+<p>無知に近い素人から暗号研究の第一人者まで誰でも、自分では破れないアルゴリズムを作ることはできる</p>
+</blockquote>
+<p>暗号技術をマスターすることは簡単ではないし『現代暗号技術入門』を読み終われば最強になれるわけでもない。
+どんなときに暗号を使うべきかを認識しよう。怪しいと思ったときに、どんなプリミティブ/アルゴリズムを使えば良いのか
+暗号アルゴリズムの水面下の動きを知ること。</p>
+
+        <script async src="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.js"></script>
+        
+    </body>
+    </html>
