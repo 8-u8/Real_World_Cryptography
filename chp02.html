@@ -1,91 +1,63 @@
 <!DOCTYPE html>
-    <html>
-    <head>
-        <meta charset="UTF-8">
-        <title>2&#x7ae0; &#x30cf;&#x30c3;&#x30b7;&#x30e5;&#x95a2;&#x6570;</title>
-        <style>
-/* From extension vscode.github */
-/*---------------------------------------------------------------------------------------------
- *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
- *--------------------------------------------------------------------------------------------*/
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
-.vscode-dark img[src$=\#gh-light-mode-only],
-.vscode-light img[src$=\#gh-dark-mode-only] {
-	display: none;
-}
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.269">
 
-/* From extension ms-toolsai.jupyter */
-/* These classnames are inherited from bootstrap, but are present in most notebook renderers */
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-.alert {
-    width: auto;
-    padding: 1em;
-    margin-top: 1em;
-    margin-bottom: 1em;
-}
-.alert > *:last-child {
-    margin-bottom: 0;
-}
-#preview > .alert:last-child {
-    /* Prevent this being set to zero by the default notebook stylesheet */
-    padding-bottom: 1em;
-}
 
-.alert-success {
-    /* Note there is no suitable color available, so we just copy "info" */
-    background-color: var(--theme-info-background);
-    color: var(--theme-info-foreground);
-}
-.alert-info {
-    background-color: var(--theme-info-background);
-    color: var(--theme-info-foreground);
-}
-.alert-warning {
-    background-color: var(--theme-warning-background);
-    color: var(--theme-warning-foreground);
-}
-.alert-danger {
-    background-color: var(--theme-error-background);
-    color: var(--theme-error-foreground);
-}
-
-</style>
-        
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
+<title>chp02</title>
 <style>
-            body {
-                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans','Meiryo UI', sans-serif;
-                font-size: 14px;
-                line-height: 1.6;
-            }
-        </style>
-        <style>
-.task-list-item {
-    list-style-type: none;
-}
-
-.task-list-item-checkbox {
-    margin-left: -20px;
-    vertical-align: middle;
-    pointer-events: none;
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
 }
 </style>
-        
-    </head>
-    <body class="vscode-body vscode-light">
-        <!--title: chp02 -->
-<h1 id="2章-ハッシュ関数">2章 ハッシュ関数</h1>
+
+
+<script src="chp02_files/libs/clipboard/clipboard.min.js"></script>
+<script src="chp02_files/libs/quarto-html/quarto.js"></script>
+<script src="chp02_files/libs/quarto-html/popper.min.js"></script>
+<script src="chp02_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="chp02_files/libs/quarto-html/anchor.min.js"></script>
+<link href="chp02_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="chp02_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="chp02_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="chp02_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="chp02_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+
+
+<!--title: chp02 -->
+<section id="章-ハッシュ関数" class="level1">
+<h1>2章 ハッシュ関数</h1>
 <ul>
 <li>ハッシュ関数とセキュリティ特性</li>
 <li>現在使われるハッシュ関数</li>
 <li>ハッシュの仕組み</li>
 </ul>
-<p>「どんなものにも、全体の中で重複しない識別情報を結びつける」ことがハッシュ関数の仕事。
-任意の文字列から特定のバイト列を生成する。
-入力が同じなら、同じハッシュ列を返す。これが強い。</p>
-<h1 id="21-ハッシュ関数とは何か">2.1 ハッシュ関数とは何か</h1>
+<p>「どんなものにも、全体の中で重複しない識別情報を結びつける」ことがハッシュ関数の仕事。 任意の文字列から特定のバイト列を生成する。 入力が同じなら、同じハッシュ列を返す。これが強い。</p>
+</section>
+<section id="ハッシュ関数とは何か" class="level1">
+<h1>2.1 ハッシュ関数とは何か</h1>
 <p>アプリのダウンロードとか、パッケージのインストールなどで謎の文字列が生まれる。</p>
 <p>たとえば <code>sha256sum</code>とか見たことありそう。これはどのように処理・生成されるのだろうか。</p>
 <p>【プロトコル】</p>
@@ -95,90 +67,311 @@
 <li>ハッシュした出力(=ダイジェスト/ハッシュ)を、ウェブページに表示されている文字列と比較する。
 <ul>
 <li>これが合っている=同じハッシュ値=入力(DLしたファイル)が同じ。</li>
+</ul></li>
 </ul>
-</li>
-</ul>
-<p>実際にSHA-256を <code>openssl</code>でやってみると確かに一致する。
+<p>実際にSHA-256を <code>openssl</code>でやってみると確かに一致する。<br>
 これをやる目的: ダウンロードしたものが、ダウンロードしようと意図していたファイルに違いないという保証をしたい。</p>
 <ul>
 <li>完全性(integrity)</li>
 <li>真正性(authenticity)</li>
 </ul>
-<p>ハッシュ関数には「第二現像困難性」がある。</p>
-<p>→ ハッシュ値がおなじになるような「別のファイル」を見つけることは難しい。</p>
-<p>ハッシュ値…ウェブページの所有者が管理していて、ウェブページを書き換えられる人なら、誰でも簡単に差し替えられる点には注意。</p>
-<p>→ ダイジェストを提供しているページ、所有者、ページ取得に使われる仕組み
-　を信頼する必要がある。</p>
-<p>→ 書き換えられる状態だとハッシュ関数だけでは完全性を保証出来ない。</p>
+<p>ハッシュ関数には「第二現像困難性」がある。 - ハッシュ値が同値になるような「別のファイル」を見つけることは難しい。 - ハッシュ値はウェブページの所有者が管理している - ウェブページを書き換えられる人なら、誰でも簡単に差し替えられる点には注意。 - ダイジェストを提供しているページ、所有者、ページ取得に使われる仕組み を信頼する必要がある。 - 書き換えられる状態だとハッシュ関数だけでは完全性を保証出来ない。</p>
 <p>ダウンロードされるファイルの完全性は、ダイジェストと、ダイジェストを提供する仕組み(httpsなど)</p>
-<p>ハッシュ関数の入力: 何でもいい。空白ですらいい。
-ハッシュ関数の出力: 決定論的に「同じ長さ」になる(SHA-256は256ビット)</p>
-<p>→ 16進数の数字列64個で表現される。</p>
-<p>一文字かわるだけで全部違う。</p>
-<h1 id="22-ハッシュ関数のセキュリティ特性">2.2 ハッシュ関数のセキュリティ特性</h1>
 <ul>
-<li>
-<p>現像計算困難性</p>
+<li>ハッシュ関数の入力: 何でもいい。空白ですらいい。</li>
+<li>ハッシュ関数の出力: 決定論的に「同じ長さ」になる(SHA-256は256ビット)
 <ul>
-<li>ある出力が与えられるとき、ハッシュ関数を逆に計算して入力を求めることはできない</li>
-<li>ミキサーみたいなもん。一回キャベツぶっこんだら終わり。</li>
+<li>16進数の数字列64個で表現される。</li>
+<li>一文字かわるだけで全部違う。</li>
+</ul></li>
 </ul>
-<blockquote>
-<p>入力が小さい場合、たとえば入力が3文字しかない場合は総当たりで試せちゃう。
-また、入力の差が小さい場合。「月曜日の午前3時に帰宅する」について、たとえば
-「月曜の15時に帰宅する」とか「月曜午後3時に帰宅する」など、色々試せるとすると、
-正確な入力が得られるかもしれない。</p>
-</blockquote>
-<p>正直現像計算困難性は完全に達成することは難しい</p>
-</li>
-<li>
-<p>第二現像計算困難性</p>
+</section>
+<section id="ハッシュ関数のセキュリティ特性" class="level1">
+<h1>2.2 ハッシュ関数のセキュリティ特性</h1>
+<section id="現像計算困難性" class="level3">
+<h3 class="anchored" data-anchor-id="現像計算困難性">現像計算困難性</h3>
 <ul>
-<li>ある入力とダイジェストがあるとき、ハッシュして同じダイジェストになるような
-「別の入力」を求めることが出来ない。</li>
+<li>ある出力が与えられるとき、ハッシュ関数を逆に計算して入力を求めることはできない
+<ul>
+<li><p>ミキサーみたいなもん。一回キャベツぶっこんだら終わり。</p>
+<blockquote class="blockquote">
+<p>入力が小さい場合、たとえば入力が3文字しかない場合は総当たりで試せちゃう。 また、入力の差が小さい場合。「月曜日の午前3時に帰宅する」について、たとえば 「月曜の15時に帰宅する」とか「月曜午後3時に帰宅する」など、色々試せるとすると、 正確な入力が得られるかもしれない。</p>
+</blockquote>
+<p>正直現像計算困難性は完全に達成することは難しい</p></li>
+</ul></li>
+</ul>
+</section>
+<section id="第二現像計算困難性" class="level3">
+<h3 class="anchored" data-anchor-id="第二現像計算困難性">第二現像計算困難性</h3>
+<ul>
+<li>ある入力とダイジェストがあるとき、ハッシュして同じダイジェストになるような 「別の入力」を求めることが出来ない。</li>
 <li>現像計算困難性を補う特性。</li>
 <li>最初の入力は何もコントロールしていない。
 <ul>
-<li>攻撃者はファイル管理者の持つダイジェストと同じハッシュ値を持つファイルに
-悪意を仕込んで差し替えるような動きが想定できる</li>
+<li>攻撃者はファイル管理者の持つダイジェストと同じハッシュ値を持つファイルに 悪意を仕込んで差し替えるような動きが想定できる</li>
+</ul></li>
 </ul>
-</li>
-</ul>
-</li>
-<li>
-<p>衝突困難性（衝突計算困難性/衝突耐性）</p>
+</section>
+<section id="衝突困難性衝突計算困難性衝突耐性" class="level3">
+<h3 class="anchored" data-anchor-id="衝突困難性衝突計算困難性衝突耐性">衝突困難性（衝突計算困難性/衝突耐性）</h3>
 <ul>
 <li>ハッシュして同じ値になるような2種類の入力は存在しない</li>
 <li>衝突困難性では、攻撃者が入力をコントロールする。
-つまり、同じハッシュ値を持つ2つのファイルを用意して、
-一方に善意、もう一方で悪意を仕込んで、悪意をDLさせる動きができる</li>
-</ul>
-<blockquote>
-<p>衝突困難性と第二現像計算困難性の違いは何だろう？
+<ul>
+<li><p>つまり、同じハッシュ値を持つ2つのファイルを用意して、<br>
+一方に善意、もう一方で悪意を仕込んで、悪意をDLさせる動きができる</p>
+<blockquote class="blockquote">
+<p>考えてみよう<br>
+衝突困難性と第二現像計算困難性の違いは何だろう？<br>
 → 攻撃者が2つの入力を選ぶことができる点。</p>
-</blockquote>
-</li>
+</blockquote></li>
+</ul></li>
 </ul>
-<p>ランダムオラクル</p>
-<p>ハッシュ関数は一般的に、予測不能でランダムなダイジェストを出力するように設計される。
-ハッシュ関数のセキュリティ特性上、プロトコルが安全であると永続的に保証できないので、
-ランダムで予測不能に設計する必要がある。
-「ランダムオラクル」は架空の構造を想定したモデル。プロトコルはこれを使って安全性を保証する。
-ランダムオラクルを使うプロトコルでは、任意の入力を送信して、全くランダムな出力が返される。</p>
-<h1 id="23">2.3</h1>
-<h1 id="24">2.4</h1>
-<h2 id="241">2.4.1</h2>
-<h2 id="242">2.4.2</h2>
-<h2 id="243">2.4.3</h2>
-<h2 id="244">2.4.4</h2>
-<h1 id="25">2.5</h1>
-<h2 id="251">2.5.1</h2>
-<h2 id="252">2.5.2</h2>
-<h2 id="253">2.5.3</h2>
-<h2 id="254">2.5.4</h2>
-<h1 id="26">2.6</h1>
+</section>
+<section id="ランダムオラクル" class="level3">
+<h3 class="anchored" data-anchor-id="ランダムオラクル">ランダムオラクル</h3>
+<p>ハッシュ関数は一般的に、予測不能でランダムなダイジェストを出力するように設計される。 ハッシュ関数のセキュリティ特性上、プロトコルが安全であると永続的に保証できないので、 ランダムで予測不能に設計する必要がある。 「ランダムオラクル」は架空の構造を想定したモデル。プロトコルはこれを使って安全性を保証する。 ランダムオラクルを使った安全性保証のプロトコルでは、任意の入力を送信すると、ランダムオラクルから<br>
+全くランダムな出力が返される。<br>
+ただし、ランダムオラクルが、現実的にハッシュ関数に置き換えることができるかは不確実。<br>
+でも実際ランダムオラクルによるプロトコル保証は行われているし、ハッシュ関数は理想的なものっぽい。</p>
+</section>
+</section>
+<section id="ハッシュ関数のセキュリティに関する考察" class="level1">
+<h1>2.3 ハッシュ関数のセキュリティに関する考察</h1>
+<p>ハッシュ関数のセキュリティ特性は以下の3つ - 現像計算困難性 - 第二現像計算困難性 - 衝突困難性</p>
+<p>ハッシュ関数のセキュリティ特性の「意味」は、ハッシュ関数をどう使うかによって決まる。<br>
+ただし、ハッシュ関数の限界も存在する。</p>
+<p>上記3つのセキュリティ特性は、ハッシュ関数が合理的に使われていることが前提にある。 特に第二現像計算困難性は、あくまで「とても難しい」「現実的に達成できない」という意味で、<br>
+理論上はめちゃくちゃ頑張れば出来てしまう、ということ。</p>
+<section id="例-はいといいえのハッシュ化" class="level3">
+<h3 class="anchored" data-anchor-id="例-はいといいえのハッシュ化">例: 「はい」と「いいえ」のハッシュ化</h3>
+<p>Aliceが「はい」と「いいえ」のどちらかをハッシュ化して、そのダイジェスト(ハッシュ値)を公開する。<br>
+もしBobが「ハッシュ化されているのは『はい』か『いいえ』である」ことを知っていたら、<br>
+こちらでハッシュ化して、そのダイジェストを比較すれば、Aliceが何をハッシュ化したのかがわかる。<br>
+この場合、AliceとBobとの間に「秘密」はどこにもなくなる。</p>
+<p>現像計算困難性を満たさないかもしれないが、ハッシュ関数を利用する際の「ランダム度」が足りなかったという反論も可能。たまたま別の言葉で同じハッシュ値が出てきたとしたら、第二現像計算困難性を破ることになる。</p>
+</section>
+<section id="ダイジェストのサイズ" class="level3">
+<h3 class="anchored" data-anchor-id="ダイジェストのサイズ">ダイジェストのサイズ</h3>
+<p>これはハッシュ関数に限った話ではなく、暗号アルゴリズム一般に言えること。<br>
+ハッシュ関数は、現代では最低256ビットの値を返すように決まっている。<br>
+具体的には以下の条件が「最低条件」となっている。</p>
+<ul>
+<li>対衝突困難性には256ビット</li>
+<li>現像計算困難性、第二現像計算困難性には128ビット</li>
+</ul>
+<p>この大きさはよほどの計算能力を持つコンピュータが出てこなければ覆らない。</p>
+<p>ハッシュ関数から離れると、現代暗号は最低128ビットのセキュリティ(<span class="math inline">\(2^{128}\)</span>の計算を実施する)を目指す<br>
+ハッシュ関数が現像計算困難性、第二現像計算困難性、衝突困難性の3つを満たすには、それぞれに対して<span class="math inline">\(2^{128}\)</span>のセキュリティを求める。<br>
+誕生日限界を考えると、<span class="math inline">\(2^{128}\)</span>のセキュリティを達成するには、<span class="math inline">\(2^{256}\)</span>のランダムな出力ができるように<br>
+設計されなければならない。</p>
+<section id="誕生日限界" class="level4">
+<h4 class="anchored" data-anchor-id="誕生日限界">誕生日限界</h4>
+<p>1つの部屋に何人いたら、そのうち2人が同じ誕生日だろうか？というお話。<br>
+現実上レアな確率かなと思いがちだが、実際は23人いると、50%の確率で<br>
+誕生日がダブる。</p>
+<p><span class="math inline">\(2^N\)</span>通りの組合せから文字列をランダムに生成する場合、特定の文字列と一致するような文字列を生成するには、<br>
+<span class="math inline">\(2^{N/2}\)</span>の確率で衝突を見つけることができる</p>
+</section>
+<section id="例-2ビットのハッシュ値を返すハッシュ関数" class="level4">
+<h4 class="anchored" data-anchor-id="例-2ビットのハッシュ値を返すハッシュ関数">例: 2ビットのハッシュ値を返すハッシュ関数</h4>
+<p>2ビットのハッシュ値を返すハッシュ関数は、その返り値が以下の4つ。</p>
+<ul>
+<li>00</li>
+<li>01</li>
+<li>10</li>
+<li>11</li>
+</ul>
+<p>適当な文字列でも、多分上記のどれかに変換されるので、現像ができる。</p>
+</section>
+</section>
+</section>
+<section id="現実世界でのハッシュ関数" class="level1">
+<h1>2.4 現実世界でのハッシュ関数</h1>
+<p>現実世界では、ハッシュ関数単体で使われることはない。<br>
+ハッシュ関数と他の機能を組合せて暗号プリミティブ/暗号プロトコルが構築している。<br>
+## 2.4.1 コミットメント - 「X社の株が値上がりした！6,000円になる！」ということが分かった。<br>
+- でも法律的にまずいので友人には教えられない。 - でも「事前に知っていた」ということは自慢したい。<br>
+- 「X社の株は1ヶ月後に6,000円になる」という文を「宣言(Commitment)」しておけば良い。 - この文をハッシュ化して友人に預け、1ヶ月後にその文を公開する。<br>
+- 同じ文章がハッシュされれているとすれば、友人も信じてくれる。</p>
+<p>上記の使われ方を「コミットメント方式」と呼ぶ。<br>
+コミットメント方式で達成したい目的 1. 秘匿性: コミットメントは元の文(平文)を隠さなければならない 2. 拘束性: コミットメントは1つの値だけを隠すものでなければならない。 - たとえば文<span class="math inline">\(x\)</span>をコミットしたら、別の値<span class="math inline">\(y\)</span>が出てきてはいけない</p>
+<section id="演習" class="level3">
+<h3 class="anchored" data-anchor-id="演習">演習</h3>
+<ul>
+<li>コミットメント方式にハッシュ関数を使ったとき、秘匿性と拘束性は保証されるか？
+<ul>
+<li>秘匿性は保証されるかもしれない。</li>
+<li>拘束性は微妙。現像計算困難性と衝突困難性を完全に達成することが難しいので。</li>
+</ul></li>
+</ul>
+</section>
+<section id="サブリソース完全性" class="level2">
+<h2 class="anchored" data-anchor-id="サブリソース完全性">2.4.2 サブリソース完全性</h2>
+</section>
+<section id="bittorrent" class="level2">
+<h2 class="anchored" data-anchor-id="bittorrent">2.4.3 BitTorrent</h2>
+</section>
+<section id="tor" class="level2">
+<h2 class="anchored" data-anchor-id="tor">2.4.4 Tor</h2>
+</section>
+</section>
+<section id="標準化されたハッシュ関数" class="level1">
+<h1>2.5 標準化されたハッシュ関数</h1>
+<section id="sha-2ハッシュ関数" class="level2">
+<h2 class="anchored" data-anchor-id="sha-2ハッシュ関数">2.5.1 SHA-2ハッシュ関数</h2>
+</section>
+<section id="sha-3ハッシュ関数" class="level2">
+<h2 class="anchored" data-anchor-id="sha-3ハッシュ関数">2.5.2 SHA-3ハッシュ関数</h2>
+</section>
+<section id="shakeとcshake-2つの可変長出力関数xof" class="level2">
+<h2 class="anchored" data-anchor-id="shakeとcshake-2つの可変長出力関数xof">2.5.3 SHAKEとcSHAKE: 2つの可変長出力関数(XOF)</h2>
+</section>
+<section id="tuplehashによるハッシュで曖昧さを回避する" class="level2">
+<h2 class="anchored" data-anchor-id="tuplehashによるハッシュで曖昧さを回避する">2.5.4 TupleHashによるハッシュで曖昧さを回避する</h2>
+</section>
+</section>
+<section id="パスワードのハッシュ" class="level1">
+<h1>2.6 パスワードのハッシュ</h1>
+</section>
 
-        
-        
-    </body>
-    </html>
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
