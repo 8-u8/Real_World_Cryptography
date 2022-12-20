@@ -20,6 +20,69 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1.6em;
   vertical-align: middle;
 }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
 </style>
 
 
@@ -208,12 +271,67 @@ ul.task-list li input[type="checkbox"] {
 </section>
 <section id="サブリソース完全性" class="level2">
 <h2 class="anchored" data-anchor-id="サブリソース完全性">2.4.2 サブリソース完全性</h2>
+<ul>
+<li>Webページは、外部のJavascriptをインポートしていることが多い
+<ul>
+<li>コンテンツデリバリーネットワーク(CDN)を使ってJavascriptライブラリ・ Webフレームワーク関連のファイルをページに読み込む。</li>
+</ul></li>
+<li>CDNが不正に利用されて、悪意のあるJavascriptファイルを配信すると、大変。</li>
+<li>ウェブページはサブリソース完全性という性質をもっている
+<ul>
+<li>以下のように、インポートタグを使ってダイジェストを指定する。</li>
+</ul>
+<div class="sourceCode" id="cb1"><pre class="sourceCode javascript code-with-copy"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="op">&lt;</span>script src<span class="op">=</span><span class="st">"https://code.jquery.com/jquery-2.1.4.min.js"</span> </span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>integrity<span class="op">=</span><span class="st">"sha256-8WqyJLuWKRBVhxXIL1jBDD7SDxU936ozCnxQbWwJVw="</span><span class="op">&gt;&lt;/</span>script<span class="op">&gt;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
+<li>Javascriptファイルを取得すると、Sha-256を利用してファイルをハッシュして、ページにハードコード(別の所で指定・処理するべき内容をソースコードに直接書き込むこと)されているダイジェストに対応するかを検証する。</li>
+</ul>
 </section>
 <section id="bittorrent" class="level2">
 <h2 class="anchored" data-anchor-id="bittorrent">2.4.3 BitTorrent</h2>
+<ul>
+<li>世界中のユーザ(ピア)が相互に直接ファイルを共有できる(ピアツーピア)プロトコル。</li>
+<li>共有したいファイルを「チャンク」に分割し、チャンクごとにハッシュ化する。
+<ul>
+<li>このハッシュがダウンロードするファイルを表すファイルを表す「信頼できるソース」として共有される</li>
+</ul></li>
+<li>ピアが他のピアから様々なファイルのチャンクを取得する仕組みがある
+<ul>
+<li>ダウンロードした各チャンクをハッシュして、その出力を、すでにわかっているダイジェストたちと比較することで、ファイル全体の完全性を検証する
+<ul>
+<li>ここで、ファイル全体を再構成する前に行う。つまり分割した状態での検証が行われている。</li>
+</ul></li>
+</ul></li>
+<li>以下はUbuntu 19.04のマグネットリンク。
+<ul>
+<li>マグネットリンクは、ファイル共有のためのリンク。</li>
+<li>ファイルに対するメタデータと、チャンクのダイジェストすべてをハッシュして得られたダイジェスト</li>
+</ul></li>
+</ul>
+<pre class="shell"><code>magnet:?xt=urn:btih:b7b0fbab74a85d4ac170662c645982a862826455</code></pre>
 </section>
-<section id="tor" class="level2">
-<h2 class="anchored" data-anchor-id="tor">2.4.4 Tor</h2>
+<section id="torトーア" class="level2">
+<h2 class="anchored" data-anchor-id="torトーア">2.4.4 Tor(トーア)</h2>
+<ul>
+<li>ブラウザ。
+<ul>
+<li>個人が匿名でインターネットを閲覧できるようにすることを目的にしている。</li>
+<li>応用で、物理的な所在地を追跡しにくい隠れたウェブページを作成する機能もある。</li>
+</ul></li>
+<li>Torで作成したページは、ウェブページの公開鍵を使用するプロトコルで保護される→9章</li>
+<li>「麻薬のeBay」と呼ばれたSilk Roadというサイト
+<ul>
+<li>Torブラウザでアクセスできるonionアドレス(base32)が、Silk Roadの公開鍵のハッシュだった。</li>
+<li>onionアドレスを知っていれば、アクセスしている隠れウェブページの公開鍵を認証して、アクセス先が正しいページである、つまり「なりすましではない」ことを確認できるというもの</li>
+</ul></li>
+</ul>
+<section id="演習-1" class="level3">
+<h3 class="anchored" data-anchor-id="演習-1">演習</h3>
+<p>onionアドレスは256ビットではないので、2.3節で考えた内容をそのまま使うにはセキュリティに対応していない。<br>
+ではどう保つのか？</p>
+<ul>
+<li>えー、どう保つんだ。</li>
+</ul>
+</section>
 </section>
 </section>
 <section id="標準化されたハッシュ関数" class="level1">
