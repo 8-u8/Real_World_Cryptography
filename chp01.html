@@ -167,8 +167,20 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 全く別の敵が公開鍵の交換(■+▲と■+★の交換)を読み取っても、<br>
 それだけでは共有の秘密を知る十分な情報は(本来)手に入らない。</p>
 <p>Diffie-Hellman暗号は<strong>安全ではない</strong>。</p>
-<p>中間者攻撃(Man In The Middle Attack; MTM) - アリスはどんな公開鍵でも「ボブの公開鍵だ」と信じて受け取る。 - 公開鍵をすり替えれば、ボブになりすます事ができる。 - 中間者イブ(■+●)がボブになりすますと、共有の秘密を(■+(▲+●))と計算できる。 - それをもとに情報を交換出来てしまう。</p>
+<section id="中間者攻撃man-in-the-middle-attack-mtm" class="level3">
+<h3 class="anchored" data-anchor-id="中間者攻撃man-in-the-middle-attack-mtm">中間者攻撃(Man In The Middle Attack; MTM)</h3>
+<ul>
+<li>アリスはどんな公開鍵でも「ボブの公開鍵だ」と信じて受け取る。
+<ul>
+<li>公開鍵をすり替えれば、ボブになりすます事ができる。</li>
+</ul></li>
+<li>中間者イブ(■+●)がボブになりすますと、共有の秘密を(■+(▲+●))と計算できる。
+<ul>
+<li>それをもとに情報を交換出来てしまう。</li>
+</ul></li>
+</ul>
 <p>公開鍵暗号にすると、信頼性が上がる訳では無いが、信頼性を評価することがより簡単になる。</p>
+</section>
 </section>
 <section id="非対称暗号化と対称暗号化との違い" class="level2">
 <h2 class="anchored" data-anchor-id="非対称暗号化と対称暗号化との違い">1.4.2 非対称暗号化と対称暗号化との違い</h2>
@@ -181,8 +193,17 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <section id="デジタル署名-紙とペンを使う署名にかわるもの" class="level2">
 <h2 class="anchored" data-anchor-id="デジタル署名-紙とペンを使う署名にかわるもの">1.4.3 デジタル署名: 紙とペンを使う署名にかわるもの</h2>
 <p>デジタル署名によって通信の秘密に対する信頼の確立は進んだ。 「署名が捏造されないか心配……」→捏造できない上、他者が簡単に検証できるようになっている。</p>
-<p>例: アリスとボブとデイビッド</p>
-<p>設定: アリスはボブを信頼することをデイビッドに伝えたい。 1. デイビッドがボブを信頼できるようにするためのプロトコルを確立する 2. メッセージに署名するときに、アリスは秘密鍵🔑を使って、署名を生成する。 3. デイビッドはアリスとアリスの署名アルゴリズムを信頼していれば、ボブを信頼できる。</p>
+<section id="例-アリスとボブとデイビッド" class="level3">
+<h3 class="anchored" data-anchor-id="例-アリスとボブとデイビッド">例: アリスとボブとデイビッド</h3>
+<ul>
+<li>設定: アリスはボブを信頼することをデイビッドに伝えたい。</li>
+</ul>
+<ol type="1">
+<li>デイビッドがボブを信頼できるようにするためのプロトコルを確立する</li>
+<li>メッセージに署名するときに、アリスは秘密鍵🔑を使って、署名を生成する。</li>
+<li>デイビッドはアリスとアリスの署名アルゴリズムを信頼していれば、ボブを信頼できる。</li>
+</ol>
+</section>
 </section>
 </section>
 <section id="暗号の分類と抽象化" class="level1">
@@ -224,6 +245,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </section>
 <section id="理論暗号学と現実世界の暗号学" class="level1">
 <h1>1.6 理論暗号学と現実世界の暗号学</h1>
+<p>省略。</p>
 </section>
 <section id="理論から実践へ-きみならどうする" class="level1">
 <h1>1.7 理論から実践へ: 「きみならどうする」</h1>
