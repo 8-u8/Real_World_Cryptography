@@ -1,5 +1,7 @@
 <!--title: chp02 -->
 
+[TOPへ戻る](https://8-u8.github.io/Real_World_Cryptography/)
+
 # 2章 ハッシュ関数
 - ハッシュ関数とセキュリティ特性
 - 現在使われるハッシュ関数
