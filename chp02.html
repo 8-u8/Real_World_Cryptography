@@ -356,11 +356,208 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </section>
 <section id="標準化されたハッシュ関数" class="level1">
 <h1>2.5 標準化されたハッシュ関数</h1>
+<p>SHA-256は普及しているハッシュ関数のうちの1つ。<br>
+暗号学的ハッシュ関数(暗号としての用途に耐えうる強度を持つハッシュ関数)としてみなされていないが、<br>
+(なぜか)現実世界で使われている関数について見てみる。</p>
+<ol type="1">
+<li>CRC32
+<ul>
+<li>誤り検出符号の関数であり、暗号学的ハッシュ関数ではない
+<ul>
+<li><a href="https://e-words.jp/w/%E8%AA%A4%E3%82%8A%E6%A4%9C%E5%87%BA%E7%AC%A6%E5%8F%B7.html#:~:text=%E8%AA%A4%E3%82%8A%E6%A4%9C%E5%87%BA%E7%AC%A6%E5%8F%B7%E3%80%90EDC%E3%80%91Error,%E3%83%87%E3%83%BC%E3%82%BF%E3%81%A8%E5%85%B1%E3%81%AB%E8%A8%98%E9%8C%B2%E3%83%BB%E4%BC%9D%E9%80%81%E3%81%99%E3%82%8B%E3%80%82">IT用語辞典</a>によれば、「データを記録・伝送する際に発生する誤りを受け手の側で検出できるように付加される符号」らしい。</li>
+<li>データの通信では、ノイズなどの様々な理由でデータの欠落や改変が起こりうる。</li>
+<li>これを防止することは不可能だが、検出はできるので、検出して対処するらしい。</li>
+</ul></li>
+<li>現像計算困難性、第二現像計算困難性、衝突困難性のいずれも満たしていない。</li>
+<li>チェックサムとも呼ばれる</li>
+</ul></li>
+<li>MD5/SHA-1
+<ul>
+<li>すでに脆弱性(衝突困難性)が生まれ、攻撃可能であることが示されている。</li>
+<li>コンピュータの処理性能が上がったことも理由になるが、基本的には設計ミスでもある。</li>
+<li>MD5はRのパッケージインストールでのチェックサムでも行われている。
+<ul>
+<li>たとえば<a href="https://bugs.r-project.org/show_bug.cgi?id=18288#c12">ここ</a>での議論はまさに「チェックサムとインストールされたパッケージの中身の改ざんの可能性の違い」に関する議論</li>
+</ul></li>
+</ul></li>
+</ol>
+<section id="標準の廃止は難しい" class="level3">
+<h3 class="anchored" data-anchor-id="標準の廃止は難しい">標準の廃止は難しい</h3>
+<p>MD5やSHA1は、現像計算困難性に依存したシステムでは未だに使われる。<br>
+なぜならば、現像計算困難性と第二現像困難性は、MD5/SHA-1ではまだ破られていないため。<br>
+つまり、ハッシュ値からもとの値を計算したり。、同じダイジェストを返すような別の入力を<br>
+見つけだしたりすることは難しい。<br>
+運用上、レガシーなシステムだったり、後方互換性が必要だったりで、これらを廃止することは難しい。</p>
+</section>
+<section id="排他的論理和" class="level3">
+<h3 class="anchored" data-anchor-id="排他的論理和">排他的論理和</h3>
+<p>2つのビットがあるとき、その排他的論理和を <span class="math inline">\(bit_A \oplus bit_B\)</span>で表す。<br>
+このとき、演算結果は以下のようになる。</p>
+<table class="table">
+<thead>
+<tr class="header">
+<th style="text-align: center;"><span class="math inline">\(bit_A\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(bit_B\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(\oplus\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+</tr>
+</tbody>
+</table>
+<p>暗号の計算でめちゃくちゃ使われるので、覚えてくれとのこと。 <a href="https://xorio.makeaji.games/">これを勉強するためのゲームがあるよ</a></p>
+</section>
 <section id="sha-2ハッシュ関数" class="level2">
 <h2 class="anchored" data-anchor-id="sha-2ハッシュ関数">2.5.1 SHA-2ハッシュ関数</h2>
+<section id="マークルダンガード構成法" class="level3">
+<h3 class="anchored" data-anchor-id="マークルダンガード構成法">マークル/ダンガード構成法</h3>
+<ul>
+<li>とりあえず日本語ですぐわかるような記事はなかったので<a href="https://en.wikipedia.org/wiki/Merkle%E2%80%93Damg%C3%A5rd_construction">英語版Wikipedia</a>をもってきた</li>
+</ul>
+<p>SHA-2は最も広く使われる暗号学的ハッシュ関数。NSAで開発されて、NISTには2001年に標準化される。<br>
+4種類のバージョン(224bits, 256bits, 384bits, 512bits)があり、SHA-224~SHA-512とも記述される。<br>
+SHA-512/224とか、SHA-512/256など、SHA-512の値を切り詰めて224ビット、256ビットの値を返すようなものもある。 以下は、実際に<code>hello world</code>という文字列をSHA-2系でハッシュ化した結果。</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">┌──</span><span class="er">(</span><span class="ex">kien</span><span class="kw">)</span><span class="ex">-[~]</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">└─$</span> echo <span class="at">-n</span> <span class="st">"hello world"</span> <span class="kw">|</span> <span class="ex">openssl</span> dgst <span class="at">-sha224</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="ex">SHA2-224</span><span class="er">(</span><span class="ex">stdin</span><span class="kw">)</span><span class="ex">=</span> 2f05477fc24bb4faefd86517156dafdecec45b8ad3cf2522a563582b</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="ex">┌──</span><span class="er">(</span><span class="ex">kien</span><span class="kw">)</span><span class="ex">-[~]</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="ex">└─$</span> echo <span class="at">-n</span> <span class="st">"hello world"</span> <span class="kw">|</span> <span class="ex">openssl</span> dgst <span class="at">-sha256</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="ex">SHA2-256</span><span class="er">(</span><span class="ex">stdin</span><span class="kw">)</span><span class="ex">=</span> b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="ex">┌──</span><span class="er">(</span><span class="ex">kien</span><span class="kw">)</span><span class="ex">-[~]</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="ex">└─$</span> echo <span class="at">-n</span> <span class="st">"hello world"</span> <span class="kw">|</span> <span class="ex">openssl</span> dgst <span class="at">-sha384</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="ex">SHA2-384</span><span class="er">(</span><span class="ex">stdin</span><span class="kw">)</span><span class="ex">=</span> fdbd8e75a67f29f701a4e040385e2e23986303ea10239211af907fcbb83578b3e417cb71ce646efd0819dd8c088de1bd</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="ex">┌──</span><span class="er">(</span><span class="ex">kien</span><span class="kw">)</span><span class="ex">-[~]</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="ex">└─$</span> echo <span class="at">-n</span> <span class="st">"hello world"</span> <span class="kw">|</span> <span class="ex">openssl</span> dgst <span class="at">-sha512</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="ex">SHA2-512</span><span class="er">(</span><span class="ex">stdin</span><span class="kw">)</span><span class="ex">=</span> 309ecc489c12d6eb4cc40f50c902f2b4d0ed77ee511a7c7a9bcd3ca86d4cd86f989dd35bc5ff499670da34255b45b0cfd830e81f605dcf7dc5542e93ae9cd76f</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>現在はSHA-256が使われる。これによって128ビットのセキュリティが確保できる。</p>
+</section>
+<section id="sha-2の仕組み" class="level3">
+<h3 class="anchored" data-anchor-id="sha-2の仕組み">SHA-2の仕組み</h3>
+<ol type="1">
+<li>圧縮関数(Compression function)
+<ul>
+<li>同じサイズの2つの入力を取り、一方の入力のサイズの値を出力する。
+<ul>
+<li>一定のデータを取って小さいデータを返す(図2.7)。</li>
+</ul></li>
+<li>SHA-2で用いられているのは、ブロック暗号を使った方法
+<ul>
+<li>デイビーズ・マイヤー法(図2.8)が用いられる。</li>
+<li>詳細は4章(認証付き暗号)。今は「そういう関数がある」として飲み込む。</li>
+</ul></li>
+<li>図2.8の解釈入力①(鍵)と入力②(標準化された固定の値・nothing-up-my-sleeve)を用いて暗号化。
+<ul>
+<li>入力②との排他的論理和を取ってダイジェストにする</li>
+<li>Nothing up my sleeve(私の袖には何もない=袖の下はない=嘘はついていない・切り札はない)
+<ul>
+<li>SHA-256は最初の方の素数の平方根を使って入力②を計算する。</li>
+<li>この値はハッシュ関数を弱体化する(バックドアを作る)ために選択されたわけではないという概念</li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ol>
+<p>デイビーズ/マイヤー法を用いた圧縮関数の図を関数に置き換えておく</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> Compression(inputA, inputB):</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="co">'''</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co">  inputA: 鍵</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co">  inputB: 上記で言うNothing up my sleeve値</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="co">  '''</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># 暗号化する(デイビーズ/マイヤー法)</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  code <span class="op">=</span> encrypt(inputA, inputB) <span class="co"># ここの暗号化はとりあえずブラックボックスを許す。</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  <span class="bu">hash</span> <span class="op">=</span> code <span class="op">^</span> inputB</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> <span class="bu">hash</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ol start="2" type="1">
+<li>マークル/ダンガード構成法
+<ul>
+<li>圧縮関数を反復的に呼び出してメッセージをハッシュ化する
+<ul>
+<li>ハッシュしたい入力をパディング
+<ul>
+<li>パディング: 一定のブロック長の倍数にあたる長さになるように、<br>
+その分のバイトを入力に追加する操作。</li>
+<li>パディング後の入力を同じブロックサイズのチャンクに分割すると、<br>
+圧縮関数の最初の引数に用いる事ができる。</li>
+</ul></li>
+</ul></li>
+<li>ブロックになった入力メッセージに圧縮関数を反復的に適用する
+<ul>
+<li>1つ前の圧縮関数の出力が、次の圧縮関数の入力の1つになる。</li>
+<li>最後の出力がハッシュ値のダイジェスト。</li>
+</ul></li>
+</ul></li>
+</ol>
+<p>コードのイメージを書いておく</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> MerkleDamgard(inputA, inputB):</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="co">'''</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co">  inputA: 鍵のリスト</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co">  inputB: 上記で言うNothing up my sleeve値</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="co">  '''</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># 暗号化する</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> i <span class="kw">in</span> inputA: <span class="co"># ここは謎。</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> i <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>      digest <span class="op">=</span> Compression(inputA[i], inputB)</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>      digest <span class="op">=</span> Compression(inputA[i], digest)</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> digest</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="sha-2の適用範囲" class="level3">
+<h3 class="anchored" data-anchor-id="sha-2の適用範囲">SHA-2の適用範囲</h3>
+<p>ハッシュ関数として用いること自体に問題はないが、秘密のハッシュ化そのものには向いていない。 SHA-2は、伸長攻撃に脆弱(3章までお楽しみ)</p>
+</section>
+<section id="マークルダンガード構成法の保証" class="level3">
+<h3 class="anchored" data-anchor-id="マークルダンガード構成法の保証">マークル/ダンガード構成法の保証</h3>
+<p>衝突困難性が保証される条件は、圧縮関数そのものが衝突困難性を備えていることがある。<br>
+任意の長さの入力に対するハッシュ関数のセキュリティは、固定サイズの圧縮関数の長さに依存する。<br>
+この依存が、設計と解析の容易さを生み出し、マークル/ダンガード構成法の(どういう意味での？)「有利」さをもたらしている</p>
+</section>
 </section>
 <section id="sha-3ハッシュ関数" class="level2">
 <h2 class="anchored" data-anchor-id="sha-3ハッシュ関数">2.5.2 SHA-3ハッシュ関数</h2>
+<section id="スポンジ構造" class="level3">
+<h3 class="anchored" data-anchor-id="スポンジ構造">スポンジ構造</h3>
+<ul>
+<li>これはどうやら基本的事項らしいので<a href="https://ja.wikipedia.org/wiki/SHA-3">日本語版Wikipedia</a>にも記述がある</li>
+</ul>
+<p>SHA-2が伸長攻撃に対して脆弱であるということがわかっているので、NISTは2007年にSHA-3の制定のためのコンペを開催する。Keccakが2012年に優勝し、FIPS PUB 202として標準化された。</p>
+<p>参考: https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.202.pdf</p>
+</section>
+<section id="sha-3の特徴" class="level3">
+<h3 class="anchored" data-anchor-id="sha-3の特徴">SHA-3の特徴</h3>
+<ul>
+<li>現像計算困難性、第2現像計算困難性、衝突困難性のすべてを満たす。</li>
+<li>SHA-2と同じ程度のセキュリティ(128ビット以上)のセキュリティを保証する</li>
+<li>伸長攻撃に対しても頑健である</li>
+</ul>
+<p>現時点で推奨されるハッシュ関数として用いられている。</p>
+</section>
+<section id="考え方のベース-転置並べ替えとスポンジ構造" class="level3">
+<h3 class="anchored" data-anchor-id="考え方のベース-転置並べ替えとスポンジ構造">考え方のベース: 転置・並べ替えとスポンジ構造</h3>
+<p>図2.11をよく見て。全単射がヒントかもしれない。</p>
+</section>
 </section>
 <section id="shakeとcshake-2つの可変長出力関数xof" class="level2">
 <h2 class="anchored" data-anchor-id="shakeとcshake-2つの可変長出力関数xof">2.5.3 SHAKEとcSHAKE: 2つの可変長出力関数(XOF)</h2>
