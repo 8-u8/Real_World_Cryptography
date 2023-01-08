@@ -544,7 +544,7 @@ SHA-512/224とか、SHA-512/256など、SHA-512の値を切り詰めて224ビッ
 <li>これはどうやら基本的事項らしいので<a href="https://ja.wikipedia.org/wiki/SHA-3">日本語版Wikipedia</a>にも記述がある</li>
 </ul>
 <p>SHA-2が伸長攻撃に対して脆弱であるということがわかっているので、NISTは2007年にSHA-3の制定のためのコンペを開催する。Keccakが2012年に優勝し、FIPS PUB 202として標準化された。</p>
-<p>参考: https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.202.pdf</p>
+<p>参考: <a href="https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.202.pdf">NISTのPablish</a></p>
 </section>
 <section id="sha-3の特徴" class="level3">
 <h3 class="anchored" data-anchor-id="sha-3の特徴">SHA-3の特徴</h3>
@@ -557,11 +557,141 @@ SHA-512/224とか、SHA-512/256など、SHA-512の値を切り詰めて224ビッ
 </section>
 <section id="考え方のベース-転置並べ替えとスポンジ構造" class="level3">
 <h3 class="anchored" data-anchor-id="考え方のベース-転置並べ替えとスポンジ構造">考え方のベース: 転置・並べ替えとスポンジ構造</h3>
-<p>図2.11をよく見て。全単射がヒントかもしれない。</p>
+<section id="転置permutation-並び替え" class="level4">
+<h4 class="anchored" data-anchor-id="転置permutation-並び替え">転置(Permutation: 並び替え)</h4>
+<p>図2.11をよく見て。以下は77ページの引用</p>
+<blockquote class="blockquote">
+<p>矢印の始点でも終点でも、要素はそれぞれ1つずつに限定されることとする。</p>
+</blockquote>
+<p>これは一対一対応・全単射の考えが近いかなと思う。<br>
+たとえば○→△だったり、△→□だったりする変換が行われる。<br>
+一対一対応であれば良いので、★→★のように、変換後の値が同じでも構わない。</p>
+<p><code>keccak-f</code>という転置設計がベースとなってスポンジ構造をもったSHA-3アルゴリズムをもっている。</p>
+</section>
+<section id="ビットでのスポンジ構造" class="level4">
+<h4 class="anchored" data-anchor-id="ビットでのスポンジ構造">8ビットでのスポンジ構造</h4>
+<p>Pythonの想像をすると、0か1をとる長さ8のリストを考えれば良さそう。<br>
+たとえば以下は、図2.12をコード化したもの。</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> [<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>] </span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span>f(x) <span class="co">#転置関数。</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>y</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span> [<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>]</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="co"># これが2^8 = 256通りの変換が得られる</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>スポンジ構造で転置を用いるときには、入力と出力に区切りを用いる。 レート(rate)とキャパシティ(capacity)と呼ばれる。<br>
+キャパシティは秘密のように扱われるので、大きいほど良さそう。</p>
+<p>以下は図2.13をコードに落とし込んだもの。</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>rate <span class="op">=</span> [<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>]</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>capacity <span class="op">=</span> [<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>]</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> [rate, capacity]</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span> [[<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>], [<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>]] <span class="co"># 上の例を、明示的に示している。</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> [<span class="dv">0</span>, <span class="dv">0</span>]</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, v <span class="kw">in</span> <span class="bu">enumerate</span>(x):</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  y[i] <span class="op">=</span> f(v)</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>y</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span> [[<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>], [<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>]]</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>この関数がハッシュ関数として正しく機能するためには、ハッシュのための演算を組み込む必要がある。 転置の入力のrate部分のXORを求める。rateの初期状態は0のみのリストになり、<br>
+キャパシティ部分はXORを求めなくても良い。</p>
+<p>図2.14を考える。</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>val <span class="op">=</span> [<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>] <span class="co"># 「吸収」したいビット列</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> [rate, capacity]  <span class="co"># [0, 0, 0, 0, 0]のビット列</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>z <span class="op">=</span> []</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> j, v <span class="kw">in</span> <span class="bu">enumerate</span>(x[<span class="dv">0</span>]):</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  t <span class="op">=</span> v <span class="op">^</span> val[j] <span class="co"># すべて0のビット列とXORを取れば入力がそのまま返る</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  z.append(t)</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>z</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span> [<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>]</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>x_hash <span class="op">=</span> [z, capacity]</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> f(x_hash) <span class="co"># 転置の実行。これによってビットの状態はランダム化する。</span></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>y </span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span>[[<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>], [<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>]]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>転置によって得られた結果はランダムになっているはずらしい。なぜそうなのかはわからない。<br>
+ただ、転置は定義を考えると一対一対応の写像であるから、入力が何かを考えることはできる。<br>
+吸収する入力が大きいときは次の手順を踏む。</p>
+<ol type="1">
+<li>必要に応じて入力をパディングして、入力をレートのサイズに合わせたブロックに分割する</li>
+<li>各ブロックと転置入力とのXORを求め、各ブロックのXOR後に中間値を使って反復的に<br>
+転置を実行する。</li>
+</ol>
+<div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co">'''</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="co">レートのサイズ(ここでは5)よりも大きな入力を吸収する場合、</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="co">スポンジ構造は入力のブロックとレートとのXORを反復して求めていき、</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="co">その結果を転置する。</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="co">'''</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>inputs <span class="op">=</span> [<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>] <span class="co"># 長いビット列</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>inputs_sep <span class="op">=</span> [[<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>], [<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>], [<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>]] <span class="co"># 5ビットずつに分割(rateと同じ長さ)</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>rate <span class="op">=</span> [<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>]</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>capacity <span class="op">=</span> [<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>]</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> []</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> idx, x <span class="kw">in</span> <span class="bu">enumerate</span>(inputs_sep):</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> idx <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>    z <span class="op">=</span> rate</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>  tmp_y <span class="op">=</span> x</span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> i, v <span class="kw">in</span> <span class="bu">enumerate</span>(tmp_y):</span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>    t <span class="op">=</span> v <span class="op">^</span> z[i] <span class="co"># XORを実行する</span></span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>  tmp_x <span class="op">=</span> [t, capacity]</span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>  z <span class="op">=</span> f(tmp_x) <span class="co"># 転置を実行する。次の入力になる。</span></span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>z </span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span> [[<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>], [<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>]]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>ダイジェストを生成するにはスポンジの最終的な状態のレートを使えば良い。<br>
+ダイジェストが長くなる場合は転置を続けながら状態のレート部分を読み取る。</p>
+<blockquote class="blockquote">
+<p>2.16: スポンジ構造でダイジェストを取得するには 反復的に状態を転置していきながら、必要なだけのレートを取得する。</p>
+</blockquote>
+<p>入力を取り込むことを「吸収」、ダイジェストを生成する過程を「搾出」という。<br>
+※ 搾り出す、ということだね。</p>
+<p>スポンジに指定される転置関数は1600ビット。</p>
+</section>
+</section>
+<section id="sha-3はランダムオラクル" class="level3">
+<h3 class="anchored" data-anchor-id="sha-3はランダムオラクル">SHA-3はランダムオラクル</h3>
+<p>ランダムオラクルは入力に関して完全にランダムな出力を返して、<br>
+同じ入力であれば同じ値を返す仮想的・理論的なデータ構造。<br>
+スポンジ構造は、転置関数が十分にランダムである限り、<br>
+ランダムオラクルに「近い」動作をすることがわかっている。<br>
+セキュリティ特性の証明は「信頼できるまで突破を試みる」という<br>
+強引な方法が取られる。</p>
 </section>
 </section>
 <section id="shakeとcshake-2つの可変長出力関数xof" class="level2">
 <h2 class="anchored" data-anchor-id="shakeとcshake-2つの可変長出力関数xof">2.5.3 SHAKEとcSHAKE: 2つの可変長出力関数(XOF)</h2>
+<p>SHA-2とSHA-3は、任意の長さの入力から、ランダムに見える固定長の出力を返す。<br>
+一方で、ハッシュ関数のダイジェストが固定長であるという性質が望ましくない場合もあるらしい。 eXtendable Output Function(XOF)という汎用性の高いプリミティブがSHA-3には採用されている。</p>
+<ul>
+<li>SHAKEはFIPS202で標準化されていて、任意の長さの出力を返すハッシュ関数と考えて差し支えない。</li>
+<li>SHA-3と同じ構成法だがより高速で、搾出フェイズでいくらでも転置関数を使える。</li>
+<li>長さの違う出力の生成では、乱数の生成や鍵の取得などに応用でき、どうやら便利らしい。</li>
+</ul>
+<p>cSHAKEはカスタマイズ文字列も取れるSHAKE。2つのダイジェストが同じにはならない(カスタマイズ文字列によって演算が変わるため)。<br>
+これは、証明を成立させるために異なるハッシュ関数を使用する必要があるプロトコルで重要。<br>
+- ドメイン分離と呼ぶ。</p>
+<p>異なる用途で同じ暗号プリミティブを使う場合、同じ鍵や同じドメイン分離を用いてはならないというのが、<br>
+暗号に関する大原則である。ドメイン分離の例はまた出てくる。</p>
+<section id="nistの指定するパラメータ" class="level4">
+<h4 class="anchored" data-anchor-id="nistの指定するパラメータ">NISTの指定するパラメータ</h4>
+<p>NISTはアルゴリズムのパラメータをビットで指定する。<br>
+SHA-2もSHA-3も基本は、256ビット長を指定する。<br>
+この制約を悪用した攻撃はビット攻撃という</p>
+<p>鍵、パラメータ、出力という暗号文字列の長さはセキュリティ強度に大きく関係する。<br>
+SHAKEでもcSHAKEでも短い出力は指定しない方がいい。<br>
+256ビットを指定していれば安全(衝突攻撃に128ビットのセキュリティが確保できる)だが、<br>
+色々の制約上、短い値を使わなければならないときは注意。<br>
+短い値を使うプロトコルで衝突困難性に問題がないなら、<br>
+現像計算困難性についてはSHAKE/cSHAKEから128ビットの出力でも良い(半分でもおk)</p>
+</section>
 </section>
 <section id="tuplehashによるハッシュで曖昧さを回避する" class="level2">
 <h2 class="anchored" data-anchor-id="tuplehashによるハッシュで曖昧さを回避する">2.5.4 TupleHashによるハッシュで曖昧さを回避する</h2>
