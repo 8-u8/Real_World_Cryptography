@@ -97,6 +97,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <link href="chp03_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="chp03_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
 
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
 </head>
 
@@ -190,11 +191,101 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </section>
 <section id="コードで見る実際の例" class="level1">
 <h1>3.2 コードで見る実際の例</h1>
+<ul>
+<li>MACを使う人が複数になった場合を想定してコードを書いてみる。
+<ul>
+<li>誰かと連絡を取りたいが、とりあえずメッセージを読まれても良い。</li>
+<li>ただし、メッセージの改ざんは防ぎたい。</li>
+</ul></li>
+<li>メッセージを送り合う2者が同じ秘密鍵を使って、メッセージの完全性を保護する。</li>
+<li>Hash-based MACは、コア部分でハッシュ関数を利用するMAC
+<ul>
+<li>SHA-2で実装されることが多い RustでHMACを考える。</li>
+</ul></li>
+</ul>
+<section id="送信側" class="level2">
+<h2 class="anchored" data-anchor-id="送信側">送信側</h2>
+<div class="sourceCode" id="cb2"><pre class="sourceCode rust code-with-copy"><code class="sourceCode rust"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">use</span> <span class="pp">sha2::</span>Sha256<span class="op">;</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">use</span> <span class="pp">hmac::</span><span class="op">{</span>Hmac<span class="op">,</span> Mac<span class="op">,</span> NewMac<span class="op">};</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co">// u8: Rustのデータ型で符号なし整数(数字はポインタのサイズ)</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="kw">fn</span> send_message(key<span class="op">:</span> <span class="op">&amp;</span>[<span class="dt">u8</span>]<span class="op">,</span> message<span class="op">:</span> <span class="op">&amp;</span>[<span class="dt">u8</span>]) <span class="op">-&gt;</span> <span class="dt">Vec</span><span class="op">&lt;</span><span class="dt">u8</span><span class="op">&gt;</span> <span class="op">{</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    <span class="co">// 秘密鍵とSHA-256ハッシュ関数でHMACを初期化する。</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> <span class="kw">mut</span> mac <span class="op">=</span> <span class="pp">Hmac::</span><span class="op">&lt;</span>Sha256<span class="op">&gt;</span><span class="pp">::</span>new(key<span class="op">.</span>into())<span class="op">;</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    <span class="co">// HMACへの追加入力をバッファに入れる</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    mac<span class="op">.</span>update(message)<span class="op">;</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    <span class="co">// 認証タグを返す</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    mac<span class="op">.</span>finalize()<span class="op">.</span>into_bytes()<span class="op">.</span>to_vec()<span class="op">;</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="op">}</span> </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="受信側" class="level2">
+<h2 class="anchored" data-anchor-id="受信側">受信側</h2>
+<p>メッセージと認証タグをもらったら、受信側は同じ秘密鍵を使ってタグ生成を行い、<br>
+認証タグと比較すれば結果が返ってくる。</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode rust code-with-copy"><code class="sourceCode rust"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">use</span> <span class="pp">sha2::</span>Sha256<span class="op">;</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="kw">use</span> <span class="pp">hmac::</span><span class="op">{</span>Hmac<span class="op">,</span> Mac<span class="op">,</span> NewMac<span class="op">};</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="kw">fn</span> receive_message(key<span class="op">:</span> <span class="op">&amp;</span>[<span class="dt">u8</span>]<span class="op">,</span> message<span class="op">:</span> <span class="op">&amp;</span>[<span class="dt">u8</span>]<span class="op">,</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    authentiacion_tag<span class="op">:</span> <span class="op">&amp;</span>[<span class="dt">u8</span>]) <span class="op">-&gt;</span> <span class="dt">bool</span> <span class="op">{</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>        <span class="co">// 同じ秘密鍵とメッセージから認証タグを再生成する</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>        <span class="kw">let</span> <span class="kw">mut</span> mac <span class="op">=</span> <span class="pp">Hmac::</span><span class="op">&lt;</span>Sha256<span class="op">&gt;</span><span class="pp">::</span>new(key)<span class="op">;</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>        <span class="co">// 再生性された認証タグが、受診したタグと一致するかを確認する</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>        mac<span class="op">.</span>verify(<span class="op">&amp;</span>authentiacion_tag)<span class="op">.</span>is_ok()<span class="op">;</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="注意-リプレイが可能であるから完全ではない" class="level2">
+<h2 class="anchored" data-anchor-id="注意-リプレイが可能であるから完全ではない">注意: リプレイが可能であるから完全ではない。</h2>
+<p>メッセージと認証タグをリプレイすること自体も真正性が維持されるし、<br>
+再送信されたメッセージかどうかを確認する方法がない。</p>
+</section>
 </section>
 <section id="macのセキュリティ特性" class="level1">
 <h1>3.3 MACのセキュリティ特性</h1>
+<p>MACにも難点・落とし穴が存在するが、そのためにはMACのセキュリティ特性と正しい利用場面を確認する必要がある MACの特徴は以下。</p>
+<ul>
+<li>認証タグの捏造に強い</li>
+<li>安全性を確保するには、認証タグの長さは最小限でなければならない</li>
+<li>認証方法が単純だとメッセージのリプレイが可能になる</li>
+<li>認証タグの検証がバグりやすい</li>
+</ul>
 <section id="認証タグの捏造" class="level2">
 <h2 class="anchored" data-anchor-id="認証タグの捏造">3.3.1 認証タグの捏造</h2>
+<p>仮に攻撃者が、任意のメッセージに対する認証タグを大量に生成するようリクエストできたとしても、<br>
+MACは(それ以前に)見たことのないメッセージに対する認証タグを捏造できないという点が保証される。<br>
+(よくわからん。)</p>
+<p>MACに使用する秘密鍵が秘匿されている限りは、こうした捏造から保護される。<br>
+そのためには秘密鍵が十分にランダムで、十分に大きくなっている(16バイト)必要がある。</p>
+<ul>
+<li>MACは「<a href="https://8-u8.github.io/Real_World_Cryptography/chp02.html#%E3%81%A9%E3%82%93%E3%81%AA%E3%81%A8%E3%81%8D%E3%81%AB%E4%BE%BF%E5%88%A9%E3%81%AA%E3%81%AE%E3%81%8B">曖昧さを狙った攻撃</a>」に弱い
+<ul>
+<li>構造を持ったメッセージを認証する場合、認証の前にシリアライズする必要がある。</li>
+</ul></li>
+</ul>
+<section id="説明" class="level3">
+<h3 class="anchored" data-anchor-id="説明">説明</h3>
+<ul>
+<li>任意のメッセージ<span class="math inline">\(m\)</span>に対して、認証タグ<span class="math inline">\(t = MAC(k, m)\)</span>を生成した事を考える。
+<ul>
+<li>このとき、<span class="math inline">\(k\)</span>を知ることなしに認証タグを計算することが出来ない。</li>
+</ul></li>
+<li>上記の理論的な安全性を保っているので最高だが、MACはそれ以上に強い性質。
+<ul>
+<li>制約のあるメッセージに対する認証タグの取得を攻撃者に許す場面が多い。
+<ul>
+<li>Cookieで利用可能なニックネームを登録したら、任意の認証タグが得られるみたいな。</li>
+</ul></li>
+</ul></li>
+</ul>
+</section>
+<section id="注" class="level3">
+<h3 class="anchored" data-anchor-id="注">注</h3>
+<blockquote class="blockquote">
+<p>攻撃者が任意のメッセージに対する認証タグをリクエストできたとしたら、そもそも何を保護できるというのだろうか。 だが、暗号学におけるセキュリティの証明とはこういうものなのだ。実際には、攻撃者がここまで強力であることは少ないので、有能な攻撃者でさえ不正を行えないとすれば、それより非力な攻撃者には、まず手が打てないことになるからだ。</p>
+</blockquote>
+</section>
 </section>
 <section id="認証タグの長さ" class="level2">
 <h2 class="anchored" data-anchor-id="認証タグの長さ">3.3.2 認証タグの長さ</h2>
