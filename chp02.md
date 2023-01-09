@@ -1,4 +1,4 @@
-<!--title: chp02 -->
+<!--title: 現代暗号技術入門のメモ・chp02 -->
 
 [TOPへ戻る](https://8-u8.github.io/Real_World_Cryptography/)
 

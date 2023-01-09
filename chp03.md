@@ -1,4 +1,4 @@
-<!-- title: chp03 -->
+<!-- title: 現代暗号技術入門のメモ・chp03 -->
 [Topへ戻る](https://8-u8.github.io/Real_World_Cryptography/)
 
 # メッセージ認証コード
