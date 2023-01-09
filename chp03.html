@@ -49,6 +49,69 @@ ul.task-list li input[type="checkbox"] {
 <p><a href="https://8-u8.github.io/Real_World_Cryptography/">Topへ戻る</a></p>
 <section id="メッセージ認証コード" class="level1">
 <h1>メッセージ認証コード</h1>
+<ul>
+<li>データの完全性を保護する暗号プリミティブとしてMessage Authentication Code(MAC)が得られる(定義できる？)。
+<ul>
+<li>ハッシュ関数と秘密鍵を組み合わせることで定義される</li>
+</ul></li>
+<li>秘密鍵の導入はどんなセキュリティでも基本的なもん。
+<ul>
+<li>鍵がないと機密性を保証できず、認証も出来ないため。</li>
+<li>ハッシュ関数は任意のデータについて真正性・完全性を保証する。
+<ul>
+<li>裏では改ざんが出来ない、信頼性の高い「経路」の存在が大きい。</li>
+</ul></li>
+</ul></li>
+<li>MACを使用して信頼性の高い経路を設けることや、MACで実現できる機能をさらう。</li>
+</ul>
+</section>
+<section id="ステートレスcookiemacの導入となる例" class="level1">
+<h1>3.1 ステートレスCookie、MACの導入となる例</h1>
+</section>
+<section id="コードで見る実際の例" class="level1">
+<h1>3.2 コードで見る実際の例</h1>
+</section>
+<section id="macのセキュリティ特性" class="level1">
+<h1>3.3 MACのセキュリティ特性</h1>
+<section id="認証タグの捏造" class="level2">
+<h2 class="anchored" data-anchor-id="認証タグの捏造">3.3.1 認証タグの捏造</h2>
+</section>
+<section id="認証タグの長さ" class="level2">
+<h2 class="anchored" data-anchor-id="認証タグの長さ">3.3.2 認証タグの長さ</h2>
+</section>
+<section id="リプレイ攻撃" class="level2">
+<h2 class="anchored" data-anchor-id="リプレイ攻撃">3.3.3 リプレイ攻撃</h2>
+</section>
+<section id="一定時間で認証タグを検証する" class="level2">
+<h2 class="anchored" data-anchor-id="一定時間で認証タグを検証する">3.3.4 一定時間で認証タグを検証する</h2>
+</section>
+</section>
+<section id="現実世界のmac" class="level1">
+<h1>3.4 現実世界のMAC</h1>
+<section id="メッセージの認証" class="level2">
+<h2 class="anchored" data-anchor-id="メッセージの認証">3.4.1 メッセージの認証</h2>
+</section>
+<section id="鍵の導出" class="level2">
+<h2 class="anchored" data-anchor-id="鍵の導出">3.4.2 鍵の導出</h2>
+</section>
+<section id="cookieの完全性" class="level2">
+<h2 class="anchored" data-anchor-id="cookieの完全性">3.4.3 Cookieの完全性</h2>
+</section>
+<section id="ハッシュテーブル" class="level2">
+<h2 class="anchored" data-anchor-id="ハッシュテーブル">3.4.4 ハッシュテーブル</h2>
+</section>
+</section>
+<section id="メッセージ認証コードmacの実際" class="level1">
+<h1>3.5 メッセージ認証コード(MAC)の実際</h1>
+<section id="hmac-ハッシュベースのmac" class="level2">
+<h2 class="anchored" data-anchor-id="hmac-ハッシュベースのmac">3.5.1 HMAC: ハッシュベースのMAC</h2>
+</section>
+<section id="kmac-cshakeベースのmac" class="level2">
+<h2 class="anchored" data-anchor-id="kmac-cshakeベースのmac">3.5.2 KMAC: cSHAKEベースのMAC</h2>
+</section>
+</section>
+<section id="sha-2と伸長攻撃" class="level1">
+<h1>3.6 SHA-2と伸長攻撃</h1>
 </section>
 
 </main>
