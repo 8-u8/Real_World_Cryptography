@@ -275,7 +275,7 @@ MACは(それ以前に)見たことのないメッセージに対する認証タ
 <ul>
 <li>制約のあるメッセージに対する認証タグの取得を攻撃者に許す場面が多い。
 <ul>
-<li>Cookieで利用可能なニックネームを登録したら、任意の認証タグが得られるみたいな。</li>
+<li>Cookieで利用可能なニックネームを登録したら、任意の認証タグが得られる</li>
 </ul></li>
 </ul></li>
 </ul>
@@ -289,6 +289,23 @@ MACは(それ以前に)見たことのないメッセージに対する認証タ
 </section>
 <section id="認証タグの長さ" class="level2">
 <h2 class="anchored" data-anchor-id="認証タグの長さ">3.3.2 認証タグの長さ</h2>
+<p>MACを使っている場合、衝突攻撃が考えられる。</p>
+<p>MACの衝突を考える場合、入力<span class="math inline">\(x\)</span>、<span class="math inline">\(y\)</span>に対して、<br>
+<span class="math inline">\(MAC(k, x) = MAC(k, y)\)</span>が満たされる場合を衝突と定義する。</p>
+<blockquote class="blockquote">
+<p>【復習】ハッシュ関数の衝突<br>
+<span class="math inline">\(HASH(x) = HASH(y)\)</span>となるような入力<span class="math inline">\(x\)</span>、<span class="math inline">\(y\)</span>を見つける</p>
+</blockquote>
+<p>誕生日限界を思い出すと、アルゴリズムの出力が大きくない場合、<br>
+衝突が見つかる期待は高まってしまう。</p>
+<p>例: 64ビットの認証タグを生成するサービスに対する衝突は<span class="math inline">\(2^{32}\)</span>回のリクエストでOK。</p>
+<p>衝突攻撃に対して頑健であるために、128ビットを要請する。<br>
+<span class="math inline">\(2^{64}\)</span>の認証タグリクエストは、秘密鍵を固定して、1Gbsのリンクでも25万年。<br>
+実際は秘密鍵も変更するので、まあ数十万年から数百万年かかる。</p>
+<p>MACは秘密鍵を持つ関数であるので、オフラインでの最適化が難しい。<br>
+(ハッシュ関数はアルゴリズムが公開されているので、インターネットがなくても計算ができる)<br>
+攻撃側は認証タグをサーバにリクエストするしかないので、MACを攻撃するには<br>
+相当に時間がかかる。</p>
 </section>
 <section id="リプレイ攻撃" class="level2">
 <h2 class="anchored" data-anchor-id="リプレイ攻撃">3.3.3 リプレイ攻撃</h2>
